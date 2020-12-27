@@ -24,7 +24,7 @@ def call(args, output_file=None):
     if output_file:
         output_file.flush()
 
-def process_prog(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path):
+def process_prog(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path, conservative):
     print("Recompiling " + ido_path + prog + "...")
 
     c_file_path = os.path.join(build_dir, os.path.basename(prog) + "_c.c")
@@ -48,6 +48,9 @@ def process_prog(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path
     if args.O2:
         flags += " -O2"
 
+    if conservative:
+        flags += " --conservative"
+
     call("gcc libc_impl.c " + c_file_path + " -o " + out_file_path + flags + ido_flag)
 
     return
@@ -60,13 +63,13 @@ def main(args):
     ido_dir = ido_path.split(os.path.sep)[-1]
     if "7.1" in ido_dir:
         print("Detected IDO version 7.1")
+        ido_version = "7.1"
         ido_flag = " -DIDO71"
-        ugen_flag = ""
         build_dir = "build71"
     elif "5.3" in ido_dir:
         print("Detected IDO version 5.3")
+        ido_version = "5.3"
         ido_flag = " -DIDO53"
-        ugen_flag = " -Dugen53"
         build_dir = "build53"
     else:
         sys.exit("Unsupported ido dir: " + ido_dir)
@@ -91,16 +94,19 @@ def main(args):
     recomp_path = os.path.join(build_dir, "recomp")
     if platform.system().startswith("CYGWIN_NT"):
         recomp_path += ".exe"
-    call("g++ recomp.cpp -o " + recomp_path + " -g -lcapstone" + std_flag + ugen_flag)
+    call("g++ recomp.cpp -o " + recomp_path + " -O2 -Wno-switch -lcapstone" + std_flag)
     
     threads = []
     for prog in BINS:
+        # for IDO 5.3 ugen UB stack reading
+        conservative = prog == "ugen" and ido_version == "5.3"
+
         if args.multhreading:
-            t = threading.Thread(target=process_prog, args=(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path))
+            t = threading.Thread(target=process_prog, args=(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path, conservative))
             threads.append(t)
             t.start()
         else:
-            process_prog(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path)
+            process_prog(prog, ido_path, ido_flag, build_dir, out_dir, args, recomp_path, conservative)
     
     if args.multhreading:
         for t in threads:
