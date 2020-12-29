@@ -277,6 +277,7 @@ static const struct {
     {"regcmp", "pp", FLAG_VARARG},
     {"regex", "ppp", FLAG_VARARG},
     {"__assert", "vppi"},
+    {"syssgi", "ii", FLAG_VARARG},
 };
 
 static void disassemble(void) {

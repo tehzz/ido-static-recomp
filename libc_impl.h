@@ -165,3 +165,4 @@ uint32_t wrapper_qsort(uint8_t *mem, uint32_t base_addr, uint32_t num, uint32_t 
 uint32_t wrapper_regcmp(uint8_t *mem, uint32_t string1_addr, uint32_t sp);
 uint32_t wrapper_regex(uint8_t *mem, uint32_t re_addr, uint32_t subject_addr, uint32_t sp);
 void wrapper___assert(uint8_t *mem, uint32_t assertion_addr, uint32_t file_addr, int line);
+int32_t wrapper_syssgi(uint8_t *mem, int32_t request, ...);

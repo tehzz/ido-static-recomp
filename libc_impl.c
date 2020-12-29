@@ -2654,3 +2654,9 @@ void wrapper___assert(uint8_t *mem, uint32_t assertion_addr, uint32_t file_addr,
     STRING(file)
     __assert(assertion, file, line);
 }
+
+int32_t wrapper_syssgi(uint8_t *mem, int32_t request, ...) {
+    fprintf(stderr, "syssgi request %d", request);
+    //assert(0 && "syssgi not implemented");
+    return 0;
+}
