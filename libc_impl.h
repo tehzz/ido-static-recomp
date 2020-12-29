@@ -153,6 +153,7 @@ int wrapper_mkstemp(uint8_t *mem, uint32_t name_addr);
 uint32_t wrapper_tmpfile(uint8_t *mem);
 int wrapper_wait(uint8_t *mem, uint32_t wstatus_addr);
 int wrapper_kill(uint8_t *mem, int pid, int sig);
+int wrapper_execve(uint8_t *mem, uint32_t pathname_addr, uint32_t argv_addr, uint32_t envp_addr);
 int wrapper_execlp(uint8_t *mem, uint32_t file_addr, uint32_t sp);
 int wrapper_execv(uint8_t *mem, uint32_t pathname_addr, uint32_t argv_addr);
 int wrapper_execvp(uint8_t *mem, uint32_t file_addr, uint32_t argv_addr);

@@ -2451,6 +2451,56 @@ int wrapper_kill(uint8_t *mem, int pid, int sig) {
     return ret;
 }
 
+int wrapper_execve(uint8_t *mem, uint32_t pathname_addr, uint32_t argv_addr, uint32_t envp_addr) {
+    STRING(pathname)
+
+    // printf("execve: path %s", pathname);
+    uint32_t argc = 0;
+    while (MEM_U32(argv_addr + argc * 4) != 0) {
+        ++argc;
+    }
+    char *argv[argc + 1];
+    for (uint32_t i = 0; i < argc; i++) {
+        uint32_t str_addr = MEM_U32(argv_addr + i * 4);
+        uint32_t len = wrapper_strlen(mem, str_addr) + 1;
+        argv[i] = (char *)malloc(len);
+        char *pos = argv[i];
+        while (len--) {
+            *pos++ = MEM_S8(str_addr);
+            ++str_addr;
+        }
+    }
+    argv[argc] = NULL;
+
+    uint32_t envc = 0;
+    while (MEM_U32(envp_addr + envc * 4) != 0) {
+        ++envc;
+    }
+    char *envp[envc + 1];
+    for (uint32_t i = 0; i < envc; i++) {
+        uint32_t str_addr = MEM_U32(envp_addr + i * 4);
+        uint32_t len = wrapper_strlen(mem, str_addr) + 1;
+        envp[i] = (char *)malloc(len);
+        char *pos = envp[i];
+        while (len--) {
+            *pos++ = MEM_S8(str_addr);
+            ++str_addr;
+        }
+    }
+    envp[envc] = NULL;
+
+    execve(pathname, argv, envp);
+    MEM_U32(ERRNO_ADDR) = errno;
+
+    for (uint32_t i = 0; i < argc; i++) {
+        free(argv[i]);
+    }
+    for (uint32_t i = 0; i < envc; i++) {
+        free(argv[i]);
+    }
+    return -1;
+}
+
 int wrapper_execlp(uint8_t *mem, uint32_t file_addr, uint32_t sp) {
     uint32_t argv_addr = sp + 4;
     return wrapper_execvp(mem, file_addr, argv_addr);

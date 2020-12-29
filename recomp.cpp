@@ -265,6 +265,7 @@ static const struct {
     {"tmpfile", "p"},
     {"wait", "ip"},
     {"kill", "iii"},
+    {"execve", "ippp"},
     {"execlp", "ip", FLAG_VARARG},
     {"execv", "ipp"},
     {"execvp", "ipp"},
