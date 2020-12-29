@@ -97,6 +97,7 @@ uint32_t wrapper_gets(uint8_t *mem, uint32_t str_addr);
 uint32_t wrapper_fread(uint8_t *mem, uint32_t data_addr, uint32_t size, uint32_t count, uint32_t fp_addr);
 uint32_t wrapper_fwrite(uint8_t *mem, uint32_t data_addr, uint32_t size, uint32_t count, uint32_t fp_addr);
 int wrapper_fputs(uint8_t *mem, uint32_t str_addr, uint32_t fp_addr);
+int wrapper_fputc(uint8_t *mem, int32_t c, uint32_t fp_addr);
 int wrapper_puts(uint8_t *mem, uint32_t str_addr);
 uint32_t wrapper_getcwd(uint8_t *mem, uint32_t buf_addr, uint32_t size);
 int wrapper_time(uint8_t *mem, uint32_t tloc_addr);

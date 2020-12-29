@@ -211,6 +211,7 @@ static const struct {
     {"fread", "upuup"},
     {"fwrite", "upuup"},
     {"fputs", "ipp"},
+    {"fputc", "ipp"},
     {"puts", "ip"},
     {"getcwd", "ppu"},
     {"time", "ip"},

@@ -2024,6 +2024,31 @@ int wrapper_fputs(uint8_t *mem, uint32_t str_addr, uint32_t fp_addr) {
     return ret == 0 && len != 0 ? -1 : 0;
 }
 
+int wrapper_fputc(uint8_t *mem, int32_t c, uint32_t fp_addr) {
+    struct FILE_irix *f = (struct FILE_irix *)&MEM_U32(fp_addr);
+
+    if (f->_base_addr == 0) {
+        file_assign_buffer(mem, f);
+        f->_cnt = bufendtab[f - (struct FILE_irix *)&MEM_U32(IOB_ADDR)];
+        f->_flag |= IOWRT;
+    }
+
+    if (f->_cnt > 0) {
+        MEM_U8(f->_ptr_addr) = (uint8_t)c;
+        f->_ptr_addr += 1;
+        f->_cnt -= 1;
+    } else {
+        // TODO set ferror?
+        return EOF;
+    }
+
+    if (f->_flag & IONBF) {
+        wrapper_fflush(mem, fp_addr); // TODO check error return value
+    }
+
+    return c;
+}
+
 int wrapper_puts(uint8_t *mem, uint32_t str_addr) {
     int ret = wrapper_fputs(mem, str_addr, STDOUT_ADDR);
     if (ret != 0) {
